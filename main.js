@@ -28,7 +28,6 @@ let tryInSequence = fs => {
         let result = f();
 
         if (result !== null && result !== undefined) {
-        	console.log("good: " + result);
             return result;
         }
     }
