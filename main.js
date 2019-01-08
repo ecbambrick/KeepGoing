@@ -41,8 +41,29 @@ let fromRelationship = () => {
     return fmap(x => x.href, links);
 }
 
+// Gets the first URL from a link that contains a parameter such as p, page, etc
+// that is greater than the current page.
+let fromParameter = () => {
+    let regex = new RegExp(/[&?](p|page|pg|pid|start)=([0-9]+)/);
+    let currentPageMatch = window.location.href.match(regex);
+    let currentPage = currentPageMatch && currentPageMatch[2];
+
+    if (currentPage == null) {
+        return;
+    }
+
+    let links = Array.from(document.querySelectorAll("a"))
+                     .map(x => ({ element: x, url: x.href, page: x.href.match(regex)}))
+                     .filter(x => x.page && Number(x.page[2]) > Number(currentPage))
+                     .filter(x => getComputedStyle(x.element).visibility != "hidden");
+
+    if (links.length > 0) {
+        return links[0].url;
+    }
+}
+
 // Gets the first URL from a link with text like ">" or "next".
-    let fromText = () => {
+let fromText = () => {
     let as = Array.from(document.getElementsByTagName("a"));
 
     let links = as.map(a => ({
@@ -68,6 +89,7 @@ document.addEventListener("keydown", (e) => {
     let modifiers     = e.ctrlKey || e.shiftKey || e.altKey;
     let position     = getPagePosition();
     let url          = tryInSequence([fromRelationship, fromText]);
+    let url          = tryInSequence([fromRelationship, fromParameter, fromText]);
     let urlExists    = url != null && url !== undefined;
 
     if (spacePressed && !modifiers && position.bottom && urlExists) {
