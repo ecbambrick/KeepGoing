@@ -82,17 +82,17 @@ let fromText = () => {
 
 // --------------------------------------------------------------------- Main //
 
-// Attempts to go to the next page when scrolled to the bottom and space is
-// pressed.
+// Attempts to go to the next page when "n" is pressed or when scrolled to the
+// bottom and space is pressed.
 document.addEventListener("keydown", (e) => {
-    let spacePressed = (e.keyCode  || e.which) == 32;
-    let modifiers     = e.ctrlKey || e.shiftKey || e.altKey;
+    let nextPressed  = e.key == "n";
+    let spacePressed = e.key == " ";
+    let modifiers    = e.ctrlKey || e.shiftKey || e.altKey;
     let position     = getPagePosition();
-    let url          = tryInSequence([fromRelationship, fromText]);
     let url          = tryInSequence([fromRelationship, fromParameter, fromText]);
     let urlExists    = url != null && url !== undefined;
 
-    if (spacePressed && !modifiers && position.bottom && urlExists) {
-        window.location.href = url
-    }
+    if (!urlExists)                                    return;
+    if (spacePressed && !modifiers && position.bottom) window.location.href = url;
+    if (nextPressed  && !modifiers)                    window.location.href = url;
 }, true);
