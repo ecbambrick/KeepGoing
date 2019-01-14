@@ -91,8 +91,9 @@ document.addEventListener("keydown", (e) => {
     let position     = getPagePosition();
     let url          = tryInSequence([fromRelationship, fromParameter, fromText]);
     let urlExists    = url != null && url !== undefined;
+    let inputFocused = document.activeElement.tagName === "INPUT";
 
-    if (!urlExists)                                    return;
+    if (!urlExists || inputFocused)                    return;
     if (spacePressed && !modifiers && position.bottom) window.location.href = url;
     if (nextPressed  && !modifiers)                    window.location.href = url;
 }, true);
